@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1094003500336",
+    "project_id": "shopping-list-f4896",
+    "storage_bucket": "shopping-list-f4896.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1094003500336:android:c2d1973bf5f05e08c714f5",
+        "android_client_info": {
+          "package_name": "gr.gingerapps.shoppinglist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1094003500336-6k95tulkcnl6gi6h1asmhi96b0qmmln3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO4Kj3ldVdXjV0RrlmfXCwtVmo3yNFXHI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1094003500336-6k95tulkcnl6gi6h1asmhi96b0qmmln3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
