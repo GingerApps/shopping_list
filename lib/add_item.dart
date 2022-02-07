@@ -20,23 +20,24 @@ class _AddItemToShoppingList extends State<AddItemToShoppingList> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      // length: 3,
+      length: 1,
       initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Add Items To Shopping List'),
           bottom: const TabBar(
             tabs: <Widget>[
-              Tab(text: "Favourite"),
-              Tab(text: 'Per Category'),
+              // Tab(text: "Favourite"),
+              // Tab(text: 'Per Category'),
               Tab(text: 'All'),
             ],
           ),
         ),
         body: TabBarView(
           children: <Widget>[
-            _favoriteItems(),
-            const Icon(Icons.ac_unit),
+            // _favoriteItems(),
+            // const Icon(Icons.ac_unit),
             StreamBuilder<QuerySnapshot>(
                 stream: repository.getStream(),
                 builder: (context, snapshot) {
@@ -46,9 +47,27 @@ class _AddItemToShoppingList extends State<AddItemToShoppingList> {
                   return ListView(
                     children: snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                      return ListTile(
-                        title: Text(data['name']),
+                      return Container(
+                        color: Colors.green,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                color: Colors.red,
+                                width: 40,
+                                child: Icon(Icons.add_shopping_cart),
+                              ),
+                              Container(color: Colors.yellow, width: 200, child: Text(data['name'])),
+                              Container(color: Colors.deepPurple, width: 60, child: Text(data['measure_unit'])),
+                            ],
+                          ),
+                        ),
                       );
+                      // return ListTile(
+                      //   title: Text(data['name']),
+                      // );
                     }).toList(),
                   );
                 }),
@@ -88,26 +107,29 @@ class _AddItemToShoppingList extends State<AddItemToShoppingList> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  TextField(
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                    ),
                     controller: _textFieldController,
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    child: DropdownButton<String>(
-                      hint: const Text("Pick a thing"),
-                      value: selectedDropdownListItem,
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedDropdownListItem = value;
-                        });
-                      },
-                      items: <String>['Kg', 'Pcs'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                  DropdownButtonFormField<String>(
+                    // hint: const Text(''),
+                    decoration: const InputDecoration(
+                      labelText: 'Measure Unit',
                     ),
+                    value: selectedDropdownListItem,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedDropdownListItem = value;
+                      });
+                    },
+                    items: <String>['Kg', 'Pcs'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                 ],
               );
@@ -118,14 +140,19 @@ class _AddItemToShoppingList extends State<AddItemToShoppingList> {
               alignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  child: const Text("OK"),
+                  child: const Text("Create"),
                   onPressed: () {
-                    repository.addItem(Item(_textFieldController.text, selectedDropdownListItem!));
+                    if (selectedDropdownListItem != null) {
+                      repository.addItem(Item(_textFieldController.text, selectedDropdownListItem!));
+                      Navigator.of(context).pop();
+                    }
                   },
                 ),
                 TextButton(
                   child: const Text("Cancel"),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
               ],
             )
@@ -164,14 +191,14 @@ class _AddItemToShoppingList extends State<AddItemToShoppingList> {
   //   ),
   // );
 
-  Widget _favoriteItems() {
-    return ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, i) {
-        return const ListTile(
-          title: Text('paok'),
-        );
-      },
-    );
-  }
+  // Widget _favoriteItems() {
+  //   return ListView.builder(
+  //     itemCount: 5,
+  //     itemBuilder: (context, i) {
+  //       return const ListTile(
+  //         title: Text('paok'),
+  //       );
+  //     },
+  //   );
+  // }
 }
