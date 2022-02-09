@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list/repository/data_repository.dart';
+import 'package:shopping_list/repository/item_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'models/items.dart';
@@ -14,8 +14,9 @@ class AddItemToShoppingList extends StatefulWidget {
 }
 
 class _AddItemToShoppingList extends State<AddItemToShoppingList> {
-  final DataRepository repository = DataRepository();
+  final ItemRepository repository = ItemRepository();
   final TextEditingController _textFieldController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -110,66 +111,78 @@ class _AddItemToShoppingList extends State<AddItemToShoppingList> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         Map<String, dynamic> data = snapshot.data()! as Map<String, dynamic>;
-        String name = data['name'];
+        String? itemName = data['name'];
+        String? selectedDropdownListItem = data['measure_unit'];
+        double? itemQuantity = data['quantity'];
         return AlertDialog(
-          title: const Text('Create a new Item'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
+          title: const Text('Edit Item'),
+          content: Form(
+            key: _formKey,
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Name',
+                      ),
+                      initialValue: itemName,
+                      onSaved: (newValue) => itemName,
                     ),
-                    initialValue: name,
-                    // controller: _textFieldController,
-                  ),
-              //     DropdownButtonFormField<String>(
-              //       // hint: const Text(''),
-              //       decoration: const InputDecoration(
-              //         labelText: 'Measure Unit',
-              //       ),
-              //       value: selectedDropdownListItem,
-              //       onChanged: (String? value) {
-              //         setState(() {
-              //           selectedDropdownListItem = value;
-              //         });
-              //       },
-              //       items: <String>['Kg', 'Pcs'].map((String value) {
-              //         return DropdownMenuItem<String>(
-              //           value: value,
-              //           child: Text(value),
-              //         );
-              //       }).toList(),
-              //     ),
-                ],
-              );
-            },
+                    DropdownButtonFormField<String>(
+                      // hint: const Text(''),
+                      decoration: const InputDecoration(
+                        labelText: 'Measure Unit',
+                      ),
+                      // validator: (String? value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Please enter some text';
+                      //   }
+                      //   return null;
+                      // },
+                      value: selectedDropdownListItem,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedDropdownListItem = value;
+                        });
+                      },
+                      items: <String>['Kg', 'Pcs'].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
-          // actions: [
-          //   ButtonBar(
-          //     alignment: MainAxisAlignment.center,
-          //     children: [
-          //       TextButton(
-          //         child: const Text("Create"),
-          //         onPressed: () {
-          //           if (selectedDropdownListItem != null) {
-          //             repository.addItem(Item(_textFieldController.text, selectedDropdownListItem!, 0));
-          //             Navigator.of(context).pop();
-          //           }
-          //         },
-          //       ),
-          //       TextButton(
-          //         child: const Text("Cancel"),
-          //         onPressed: () {
-          //           Navigator.of(context).pop();
-          //         },
-          //       ),
-          //     ],
-          //   )
-          // ],
+          actions: [
+            ButtonBar(
+              alignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  child: const Text("Create"),
+                  onPressed: () {
+                    if (selectedDropdownListItem != null && itemName != null && itemName.isNotEmpty) {
+                      _formKey.currentState?.save();
+                      repository.updateItem(Item(itemName, selectedDropdownListItem!, itemQuantity!));
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+                TextButton(
+                  child: const Text("Cancel"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          ],
         );
       },
     );

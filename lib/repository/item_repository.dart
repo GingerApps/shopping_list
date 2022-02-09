@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shopping_list/models/items.dart';
 
-class DataRepository {
+class ItemRepository {
 
   final CollectionReference collection =
   FirebaseFirestore.instance.collection('items');
@@ -15,7 +15,7 @@ class DataRepository {
   }
 
   void updateItem(Item item) async {
-    await collection.doc(item.name).update(item.toJson());
+    await collection.doc( item.name).update(item.toJson());
   }
 
   void deleteItem(Item item) async {

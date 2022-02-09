@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/add_item.dart';
 
+import 'add_shopping_list_item.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -23,6 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Shopping List',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -30,6 +33,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const CurrentShoppingList(),
+        '/add': (context) => AddShoppingListItem(),
         '/second': (context) => const AddItemToShoppingList(),
       },
     );
@@ -66,7 +70,7 @@ class _CurrentShoppingList extends State<CurrentShoppingList> {
   }
 
   void _addItem() {
-    Navigator.pushNamed(context, '/second');
+    Navigator.pushNamed(context, '/add');
   }
 }
 
