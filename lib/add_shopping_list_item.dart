@@ -11,8 +11,6 @@ class AddShoppingListItem extends StatelessWidget {
   final ItemRepository itemRepository = ItemRepository();
   final ShoppingListRepository shoppingListRepository = ShoppingListRepository();
 
-// final List<Item> listOfItems = FirebaseFirestore.instance.collection('items')
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,15 +18,15 @@ class AddShoppingListItem extends StatelessWidget {
         title: const Text('Add Items To Shopping List'),
       ),
       body:
-          // ListView.builder(
-          //   itemCount: FirebaseFirestore.instance.collection('items').get().,
-          //     itemBuilder: (context, snapshot) {
-          // })
-
-          StreamBuilder<QuerySnapshot>(
+          //         ListView.builder(
+          //           itemCount: FirebaseFirestore.instance.collection("items").get().then((querySnapshot) {
+          // querySnapshot.docs.length;}),
+          //             itemBuilder: (context, snapshot) {
+          //         })
+          StreamBuilder(
               stream: itemRepository.getStream(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+              builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                if (!streamSnapshot.hasData) {
                   return Container(
                     alignment: Alignment.center,
                     height: 50,
@@ -36,26 +34,33 @@ class AddShoppingListItem extends StatelessWidget {
                     child: const LinearProgressIndicator(),
                   );
                 }
-                return ListView(
-                    padding: const EdgeInsets.all(8),
-                    children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                      Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                      return Card(
-                        elevation: 10,
-                        child: ElevatedButton(
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Center(
-                              child: Text(data['name']),
-                            ),
+                return ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: streamSnapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
+                    return Card(
+                      elevation: 10,
+                      child: ElevatedButton(
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Center(
+                            child: Text(documentSnapshot['name']),
                           ),
-                          onPressed: () {
-
-                          },
                         ),
-                      );
-                    }).toList());
+                        onPressed: () {
+                          _createOrUpdate(documentSnapshot);
+                        },
+                      ),
+                    );
+                  },
+                );
               }),
     );
   }
+
+  Future<void> _createOrUpdate([DocumentSnapshot? documentSnapshot]) async {
+    await FirebaseFirestore.instance.collection("shopping_list").add({"name": documentSnapshot!['name']});
+  }
+
 }
